@@ -1,9 +1,15 @@
-FROM nginx:alpine
+FROM node:20-alpine
 
-# Copie le site dans le dossier servi par nginx
-COPY index.html /usr/share/nginx/html/index.html
+WORKDIR /app
 
-# Expose le port 80 (requis par Sliplane)
-EXPOSE 80
+# Installe les dépendances
+COPY package.json ./
+RUN npm install --production
 
-CMD ["nginx", "-g", "daemon off;"]
+# Copie le reste du code
+COPY . .
+
+# Expose le port (Sliplane utilise PORT env var)
+EXPOSE 3000
+
+CMD ["node", "server.js"]
