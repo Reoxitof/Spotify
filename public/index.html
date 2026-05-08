@@ -218,6 +218,48 @@
     .embed-wrapper { border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
     .embed-wrapper iframe { display: block; }
 
+    /* Jam button */
+    .jam-section {
+      margin-top: 16px;
+      display: none;
+      animation: fadeIn 0.5s ease both;
+    }
+    @keyframes fadeIn {
+      from { opacity:0; transform:translateY(6px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .jam-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, #1db954, #17a349);
+      color: #000;
+      font-weight: 700;
+      font-size: 0.95rem;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 4px 20px rgba(29,185,84,0.35);
+    }
+    .jam-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(29,185,84,0.5); }
+    .jam-btn:active { transform: translateY(0); }
+    .jam-pulse {
+      width: 8px; height: 8px;
+      background: #000;
+      border-radius: 50%;
+      animation: jamPulse 1.2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    @keyframes jamPulse {
+      0%,100% { transform: scale(1); opacity:1; }
+      50%      { transform: scale(1.6); opacity:0.6; }
+    }
+
     .footer { margin-top: 16px; text-align: center; font-size: 0.72rem; color: rgba(255,255,255,0.2); }
     .footer a { color: #1db954; text-decoration: none; }
   </style>
@@ -256,6 +298,14 @@
         <span id="time-total">0:00</span>
       </div>
     </div>
+  </div>
+
+  <!-- Jam section -->
+  <div class="jam-section" id="jam-section">
+    <a id="jam-btn" class="jam-btn" href="#" target="_blank">
+      <div class="jam-pulse"></div>
+      🎧 Écouter avec moi — Rejoindre la Jam
+    </a>
   </div>
 
   <!-- Playlist embed -->
@@ -363,6 +413,24 @@
   // Poll toutes les 5 secondes
   fetchNowPlaying();
   setInterval(fetchNowPlaying, 5000);
+
+  // Jam link
+  async function fetchJam() {
+    try {
+      const res = await fetch('/api/jam');
+      const { jamLink } = await res.json();
+      const section = document.getElementById('jam-section');
+      const btn = document.getElementById('jam-btn');
+      if (jamLink) {
+        btn.href = jamLink;
+        section.style.display = 'block';
+      } else {
+        section.style.display = 'none';
+      }
+    } catch(e) {}
+  }
+  fetchJam();
+  setInterval(fetchJam, 10000);
 </script>
 
 </body>
